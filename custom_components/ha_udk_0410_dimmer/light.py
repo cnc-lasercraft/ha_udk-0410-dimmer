@@ -23,7 +23,7 @@ import os
 import time
 from typing import Optional, Tuple
 
-import serial_asyncio
+import serial_asyncio_fast as serial_asyncio
 from homeassistant.components.light import ATTR_BRIGHTNESS, ColorMode, LightEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
