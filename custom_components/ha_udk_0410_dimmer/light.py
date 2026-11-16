@@ -28,7 +28,6 @@ from homeassistant.components.light import ATTR_BRIGHTNESS, ColorMode, LightEnti
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import PlatformNotReady
-from homeassistant.helpers import entity_registry as er
 
 from .const import CONF_MODULES, DOMAIN, MOD_ADDRESS, MOD_DIMMERS, MOD_NAME
 
@@ -644,8 +643,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
     except Exception as err:
         raise PlatformNotReady(f"Serieller Port {runtime.port} nicht bereit: {err}") from err
 
-    ent_reg = er.async_get(hass)
-
     for module_cfg in modules_cfg:
         module_name = module_cfg.get(MOD_NAME, "Module")
         module_addr = int(module_cfg.get(MOD_ADDRESS, 1))
@@ -669,18 +666,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
             )
             unique_id = f"ha_udk_0410_dimmer_{module_addr}_{dimmer_index}"
             entity.unique_id = unique_id
-
-            existing_entity_id = ent_reg.async_get_entity_id("light", DOMAIN, unique_id)
-            if existing_entity_id:
-                entry_obj = ent_reg.async_get(existing_entity_id)
-                current_name = (entry_obj.name or "") if entry_obj else ""
-                if current_name != full_name:
-                    _LOGGER.info(
-                        "HA UDK-0410 Dimmer: Aktualisiere Namen %s -> %s",
-                        existing_entity_id,
-                        full_name,
-                    )
-                    ent_reg.async_update_entity(existing_entity_id, name=full_name)
 
             entities.append(entity)
 
